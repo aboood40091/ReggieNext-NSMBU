@@ -69,13 +69,13 @@ except (ImportError, NameError):
     raise Exception(errormsg)
 
 # Local imports
-import DDS
 import lz77
 import SARC as SarcLib
 import spritelib as SLib
 import sprites
 from strings import *
 import TPLLib
+import DDS
 import yaz0
 
 ReggieID = 'Reggie! Level Editor Next by Treeki, Tempus, RoadrunnerWMC, MrRean and Grop'
@@ -146,14 +146,14 @@ RestoredFromAutoSave = False
 AutoSavePath = ''
 AutoSaveData = b''
 AutoOpenScriptEnabled = False
-CurrentLevelNameForAutoOpenScript = None
+CurrentLevelNameForAutoOpenScript = 'AAAAAAAAAAAAAAAAAAAAAAAAAA'
 
 # Game enums
 NewSuperMarioBrosU = 0
 NewSuperLuigiU = 1
 FileExtentions = {
-    NewSuperMarioBrosU: ('.sarc',),
-    NewSuperLuigiU: ('.sarc',),
+    NewSuperMarioBrosU: ('.szs',),
+    NewSuperLuigiU: ('.szs',),
     }
 FirstLevels = {
     NewSuperMarioBrosU: '1-1',
@@ -853,7 +853,7 @@ def isValidGamePath(check='ug'):
     if check is None or check == '': return False
     if not os.path.isdir(check): return False
     #if not os.path.isdir(os.path.join(check, 'Unit')): return False
-    if not (os.path.isfile(os.path.join(check, '1-1.szs')) or os.path.isfile(os.path.join(check, '1-1.sarc'))): return False
+    if not os.path.isfile(os.path.join(check, '1-1.szs')): return False
 
     return True
 
@@ -1866,7 +1866,9 @@ class ReggieRibbonFileMenu(QFileMenu):
         b = self.addArrowButton(openPanel, gi('open', True),   ts('MenuItems', 112), mw.HandleOpenFromName, None,               ts('MenuItems', 3))
         c = self.addButton(                gi('save', True),   ts('MenuItems', 8),   mw.HandleSave,         qk.Save,            ts('MenuItems', 9))
         d = self.addButton(                gi('saveas', True), ts('MenuItems', 10),  mw.HandleSaveAs,       qk.SaveAs,          ts('MenuItems', 11))
-        self.btns['new'], self.btns['openname1'], self.btns['save'], self.btns['saveas'] = a, b, c, d
+        #e = self.addButton(                gi('compress', True), ts('MenuItems', 130),  mw.HandleCompress,       qk.Compress,          ts('MenuItems', 131))
+        #f = self.addButton(                gi('compressnslu', True), ts('MenuItems', 132),  mw.HandleCompressNSLU,       qk.CompressNSLU,          ts('MenuItems', 133))
+        self.btns['new'], self.btns['openname1'], self.btns['save'], self.btns['saveas'], self.btns['compress'], self.btns['compressnslu'] = a, b, c, d
         self.addSeparator()
         a = self.addButton(gi('info', True),     trans.string('MenuItems', 12), mw.HandleInfo,        'Ctrl+Alt+I', trans.string('MenuItems', 13))
         b = self.addButton(gi('settings', True), trans.string('MenuItems', 18), mw.HandlePreferences, 'Ctrl+Alt+P', trans.string('MenuItems', 19))
@@ -2988,6 +2990,10 @@ def _LoadTileset(idx, name, reload=False):
             QtWidgets.QMessageBox.warning(None, trans.string('Err_CorruptedTilesetData', 0), trans.string('Err_CorruptedTilesetData', 1, '[file]', name))
             return False
 
+        # Init the tiles
+        for i in range(tileoffset, tileoffset + 256):
+            Tiles[i] = TilesetTile(QtGui.QPixmap())
+
         # load in the textures
         image = LoadTexture_NSMBU(comptiledata,name)
 
@@ -3079,7 +3085,6 @@ def _LoadTileset(idx, name, reload=False):
     # Add Tiles to spritelib
     SLib.Tiles = Tiles
 
-
 def LoadTexture_NSMBU(tiledata,name):
     with open('tex/texture.gtx', 'wb') as binfile:
         binfile.write(tiledata)
@@ -3102,6 +3107,8 @@ def LoadTexture_NSMBU(tiledata,name):
     for filename in os.listdir('tex'):
         if filename == 'NOTE.txt': continue
         os.remove(os.path.join('tex', filename))
+
+    print(''+name+' is loaded')
 
     return image
 
@@ -4207,7 +4214,7 @@ class Area_NSMBU(AbstractParsedArea):
         Creates a completely new NSMBU area
         """
         # Default tileset names for NSMBU
-        self.tileset0 = ''
+        self.tileset0 = 'Pa0_jyotyu'
         self.tileset1 = ''
         self.tileset2 = ''
         self.tileset3 = ''
@@ -12730,6 +12737,8 @@ class ReggieWindow(QtWidgets.QMainWindow):
         self.CreateAction('openrecent', None, GetIcon('recent'), trans.string('MenuItems', 6), trans.string('MenuItems', 7), None)
         #self.CreateAction('save', self.HandleSave, GetIcon('save'), trans.string('MenuItems', 8), trans.string('MenuItems', 9), QtGui.QKeySequence.Save)
         self.CreateAction('saveas', self.HandleSaveAs, GetIcon('saveas'), trans.string('MenuItems', 10), trans.string('MenuItems', 11), QtGui.QKeySequence.SaveAs)
+        #self.CreateAction('compress', self.HandleCompress, GetIcon('saveas'), trans.string('MenuItems', 130), trans.string('MenuItems', 131), QtGui.QKeySequence.SaveAs)
+        #self.CreateAction('compressnslu', self.HandleCompressNSLU, GetIcon('saveas'), trans.string('MenuItems', 132), trans.string('MenuItems', 133), QtGui.QKeySequence.SaveAs)
         self.CreateAction('metainfo', self.HandleInfo, GetIcon('info'), trans.string('MenuItems', 12), trans.string('MenuItems', 13), QtGui.QKeySequence('Ctrl+Alt+I'))
         self.CreateAction('screenshot', self.HandleScreenshot, GetIcon('screenshot'), trans.string('MenuItems', 14), trans.string('MenuItems', 15), QtGui.QKeySequence('Ctrl+Alt+S'))
         self.CreateAction('changegamepath', self.HandleChangeGamePath, GetIcon('folderpath'), trans.string('MenuItems', 16), trans.string('MenuItems', 17), QtGui.QKeySequence('Ctrl+Alt+G'))
@@ -12830,6 +12839,8 @@ class ReggieWindow(QtWidgets.QMainWindow):
         fmenu.addSeparator()
         #fmenu.addAction(self.actions['save'])
         fmenu.addAction(self.actions['saveas'])
+        #fmenu.addAction(self.actions['compress'])
+        #fmenu.addAction(self.actions['compressnslu'])
         fmenu.addAction(self.actions['metainfo'])
         fmenu.addSeparator()
         fmenu.addAction(self.actions['screenshot'])
@@ -12952,6 +12963,7 @@ class ReggieWindow(QtWidgets.QMainWindow):
                 'openrecent',
                 'save',
                 'saveas',
+                #'compress',
                 'metainfo',
                 'screenshot',
                 'changegamepath',
@@ -13490,7 +13502,11 @@ class ReggieWindow(QtWidgets.QMainWindow):
         global AutoSaveDirty
         if not AutoSaveDirty: return
 
-        data = Level.save(self.getInnerSarcName())
+        name = self.getInnerSarcName()
+        if "-" not in name:
+            print('HEY THERE IS NO -, THIS WILL NOT WORK!')
+
+        data = Level.save(name)
         setSetting('AutoSaveFilePath', self.fileSavePath)
         setSetting('AutoSaveFileData', QtCore.QByteArray(data))
         AutoSaveDirty = False
@@ -13928,7 +13944,7 @@ class ReggieWindow(QtWidgets.QMainWindow):
         # get sprites
         for item in clipboard_s:
             data = item.spritedata
-            convclip.append('1:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d' % (item.type, item.objx, item.objy, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[9]))
+            convclip.append('1:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d' % (item.type, item.objx, item.objy, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[9], data[10], data[11]))
 
         convclip.append('%')
         return '|'.join(convclip)
@@ -14390,8 +14406,12 @@ class ReggieWindow(QtWidgets.QMainWindow):
 
         # no error checking. if it saved last time, it will probably work now
 
+        name = self.getInnerSarcName()
+        if "-" not in name:
+            print('HEY THERE IS NO -, THIS WILL NOT WORK!')
+
         with open(self.fileSavePath, 'wb') as f:
-            f.write(Level.save(self.getInnerSarcName()))
+            f.write(Level.save(name))
         self.LoadLevel(None, self.fileSavePath, True, 1)
 
 
@@ -14473,8 +14493,9 @@ class ReggieWindow(QtWidgets.QMainWindow):
         """
         Create a new level
         """
-        if self.CheckDirty(): return
-        self.LoadLevel(None, None, False, 1)
+        #if self.CheckDirty(): return
+        #self.LoadLevel(None, None, False, 1)
+        print('Not functional yet.')
 
 
     @QtCore.pyqtSlot()
@@ -14515,8 +14536,12 @@ class ReggieWindow(QtWidgets.QMainWindow):
             self.HandleSaveAs()
             return
 
+        name = self.getInnerSarcName()
+        if "-" not in name:
+            print('HEY THERE IS NO -, THIS WILL NOT WORK!')
+
         global Dirty, AutoSaveDirty
-        data = Level.save(self.getInnerSarcName())
+        data = Level.save(name)
         try:
             with open(self.fileSavePath, 'wb') as f:
                 f.write(data)
@@ -14550,14 +14575,26 @@ class ReggieWindow(QtWidgets.QMainWindow):
         self.fileSavePath = fn
         self.fileTitle = os.path.basename(fn)
 
-        data = Level.save(self.getInnerSarcName())
-        with open(fn, 'wb') as f:
-            f.write(data)
+        # we take the name of the level and make sure it's formatted right. if not, crashy
+        # this is one of the few ways, if there's no - it will certainly crash
+        failure = 0
+        name = self.getInnerSarcName()
+        # oh noes there's no - !!!
+        if "-" not in name:
+            warningBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.NoIcon, 'Name warning', 'The input name does not include a -, which is what retail levels use. \nThis may crash, because it does not fit the proper format.')
+            warningBox.exec_()
+            failure = 1
+
+        if failure == 0:
+            data = Level.save(name)
+            with open(fn, 'wb') as f:
+                f.write(data)
+            self.UpdateTitle()
+
+        # a quick way to save shit
 
         #setSetting('AutoSaveFilePath', fn)
         #setSetting('AutoSaveFileData', 'x')
-
-        self.UpdateTitle()
 
         #self.RecentFilesMgr.addPath(self.fileSavePath)
 
@@ -14566,7 +14603,26 @@ class ReggieWindow(QtWidgets.QMainWindow):
         return QtWidgets.QInputDialog.getText(self, "Choose Internal Name",
             "Choose an internal filename for this level (do not add a .sarc extension) (example: 1-1):", QtWidgets.QLineEdit.Normal)[0]
 
+    @QtCore.pyqtSlot()
+    def HandleCompress(self):
+        """
+        Runs fake_yaz0.exe for faster testing (with a NSMBU Path)
+        """
+        # feel free to change this to your own file.
+        # 1-1.sarc is supposed to be in the same folder reggie.py is ran.
+        # fake_yaz0 can be found at http://wiiu.us.to/tools/fake_yaz0.exe
+        os.system(r"C:\Python34\fake_yaz0.exe 1-1.sarc C:\Cafiine\cafiine_root\00050000-1014B700\vol\content\Common\course_res_pack\1-1.szs")
 
+    @QtCore.pyqtSlot()
+    def HandleCompressNSLU(self):
+        """
+        Runs fake_yaz0.exe for faster testing (with a NSLU Path)
+        """
+        # feel free to change this to your own file.
+        # 1-1.sarc is supposed to be in the same folder reggie.py is ran.
+        # fake_yaz0 can be found at http://wiiu.us.to/tools/fake_yaz0.exe
+        os.system(r"C:\Python34\fake_yaz0.exe 1-1.sarc C:\Cafiine\cafiine_root\00050000-1014B700\vol\content\RDashRes\course_res_pack\1-1.szs")
+        
     @QtCore.pyqtSlot()
     def HandleExit(self):
         """
@@ -15094,9 +15150,7 @@ class ReggieWindow(QtWidgets.QMainWindow):
 
         name = checkname
 
-        if not (name.endswith('.szs') or name.endswith('.sarc')):
-            QtWidgets.QMessageBox.warning(self, 'Reggie!', trans.string('Err_InvalidLevel', 0), QtWidgets.QMessageBox.Ok)
-            return False # keep it from crashing by loading things it shouldn't
+        if not (name.endswith('.szs') or name.endswith('.sarc')): return False # keep it from crashing by loading things it shouldn't
 
         # Get the data
         global RestoredFromAutoSave

@@ -28,3 +28,7 @@
 27:Door Entrance
 28:Unknown (Crash)
 29:Unknown (Freeze)
+30:Unknown
+31:Unknown
+32:Unknown
+33:Unknown

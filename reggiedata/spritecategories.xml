@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <views>
-	<view name="Enemies">'
+	<view name="Enemies">
   <category name="Enemies - Overworld">
     <attach sprite="0"/>
     <attach sprite="1"/>

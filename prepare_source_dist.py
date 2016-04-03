@@ -2,7 +2,7 @@
 # -*- coding: latin-1 -*-
 
 # Reggie! Next - New Super Mario Bros. U Level Editor
-# Version v0.4 ALPHA
+# Version v0.6
 # Copyright (C) 2009-2016 Treeki, Tempus, angelsl, JasonP27, Kinnay,
 # MalStar1000, RoadrunnerWMC, MrRean, Grop
 

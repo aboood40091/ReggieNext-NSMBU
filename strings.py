@@ -2,7 +2,7 @@
 # -*- coding: latin-1 -*-
 
 # Reggie! Next - New Super Mario Bros. U Level Editor
-# Version v0.4 ALPHA
+# Version v0.6
 # Copyright (C) 2009-2016 Treeki, Tempus, angelsl, JasonP27, Kinnay,
 # MalStar1000, RoadrunnerWMC, MrRean, Grop
 
@@ -484,7 +484,11 @@ class ReggieTranslation():
                 126: 'Show Fullscreen',
                 127: 'Display the main window with all available screen space',
                 128: 'Reload Spritedata',
-                129: 'Reload the spritedata without restarting the editor'
+                129: 'Reload the spritedata without restarting the editor',
+                130: 'Compress NSMBU level with Fake Yaz0',
+                131: 'Compress',
+                132: 'Compress NSLU level with Fake Yaz0',
+                133: 'Compress'
                 },
             'Objects': {
                 0: '[b]Tileset [tileset], object [obj]:[/b][br][width]x[height] on layer [layer]',
