@@ -3417,7 +3417,7 @@ def ProcessOverrides(idx, name):
     #                    0768-1023 for Pa3;
     # From 1024 (0x200 * 4), there is room for the overrides.
     try:
-        tsindexes = ['Pa0_jyotyu', 'Pa0_jyotyu_chika', 'Pa0_yougan', 'Pa0_yougan2']
+        tsindexes = ['Pa0_jyotyu', 'Pa0_jyotyu_chika', 'Pa0_jyotyu_yougan', 'Pa0_jyotyu_yougan2']
         if name in tsindexes:
             # We use the same overrides for all Pa0 tilesets
             offset = 0x200 * 4
