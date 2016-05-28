@@ -248,11 +248,11 @@ class ReggieTranslation():
                 },
             'Err_CorruptedTileset': {
                 0: 'Error',
-                1: 'An error occurred while trying to load [file].arc. Check your Unit folder to make sure it is complete and not corrupted. The editor may run in a broken state or crash after this.',
+                1: 'An error occurred while trying to load [file].szs. Check your Unit folder to make sure it is complete and not corrupted. The editor may run in a broken state or crash after this.',
                 },
             'Err_CorruptedTilesetData': {
                 0: 'Error',
-                1: 'Cannot find the required texture within the tileset file [file].arc, so it will not be loaded. Keep in mind that the tileset file cannot be renamed without changing the names of the texture/object files within the archive as well!',
+                1: 'Cannot find the required texture within the tileset file [file].szs, so it will not be loaded. Keep in mind that the tileset file cannot be renamed without changing the names of the texture/object files within the archive as well!',
                 },
             'Err_InvalidLevel': {
                 0: 'This file doesn\'t seem to be a valid level.',
@@ -488,7 +488,9 @@ class ReggieTranslation():
                 130: 'Compress NSMBU level with Fake Yaz0',
                 131: 'Compress',
                 132: 'Compress NSLU level with Fake Yaz0',
-                133: 'Compress'
+                133: 'Compress',
+                134: 'Change save path...',
+                135: 'Change where the compress button leads the saved file to.'
                 },
             'Objects': {
                 0: '[b]Tileset [tileset], object [obj]:[/b][br][width]x[height] on layer [layer]',

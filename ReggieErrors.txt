@@ -1,8 +1,0 @@
-
-ReggieTranslation.string() ERROR: AreaDlg; 38; KeyError(38,)
-
-ReggieTranslation.string() ERROR: AreaDlg; 38; KeyError(38,)
-
-ReggieTranslation.string() ERROR: AreaDlg; 38; KeyError(38,)
-
-ReggieTranslation.string() ERROR: AreaDlg; 38; KeyError(38,)

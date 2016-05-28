@@ -150,7 +150,8 @@ shutil.copy('license.txt', dir_)
 shutil.copy('readme.md', dir_)
 shutil.copy('TexConv2.exe', dir_)
 shutil.copy('texUtils.dll', dir_)
-shutil.copy('libEGL.dll', dir_)
+if not os.path.isfile(dir_ + '/libEGL.dll'):
+    shutil.copy('libEGL.dll', dir_)
 print('>> Files copied!')
 
 print('>> Attempting to write a new release.txt ...')
