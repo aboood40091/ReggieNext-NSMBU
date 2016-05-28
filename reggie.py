@@ -3625,7 +3625,7 @@ def ProcessOverrides(idx, name):
             t[47].main = t[offset + 47].main
             t[47].setOverridden()
             ### Black BG (not sure what that means)
-            t[46].main = t[offset + 46].main
+            t[46].main = t[offset + 47].main
             t[46].setOverridden()
 
             # Flowers / Grass
