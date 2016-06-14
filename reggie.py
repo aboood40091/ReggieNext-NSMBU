@@ -75,7 +75,6 @@ import spritelib as SLib
 import sprites
 from strings import *
 import TPLLib
-import DDS
 import yaz0
 
 ReggieID = 'Reggie! Level Editor Next by Treeki, Tempus, RoadrunnerWMC, MrRean and Grop'
@@ -2975,7 +2974,7 @@ def _LoadTileset(idx, name, reload=False):
             return False
 
         # load in the textures
-        img = LoadTexture_NSMBU(comptiledata)
+        img = LoadTexture_NSMBU(comptiledata, name)
 
         # Divide it into individual tiles and
         # add collisions at the same time
@@ -3057,18 +3056,14 @@ def _LoadTileset(idx, name, reload=False):
     for i in range(256):
         TilesetCache[name].append(Tiles[i + tileoffset])
 
-def LoadTexture_NSMBU(tiledata):
-    with open('tex/texture.gtx', 'wb') as binfile:
+def LoadTexture_NSMBU(tiledata, name):
+    with open('tex/'+name+'.gtx', 'wb') as binfile:
         binfile.write(tiledata)
 
-    os.system('TexConv2 -i tex/texture.gtx -f GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM -o tex/texture.gtx')
-    os.system('TexConv2 -i tex/texture.gtx -o tex/texture.dds')
-    DDS.toPNG('tex/texture.dds','tex/texture.png',2048,512)
+    print('')
+    os.system('python gtx_extract.py tex/'+name+'.gtx')
 
-    pngname = None
-    for filename in os.listdir('tex'):
-        if filename.endswith('.png'):
-            pngname = filename
+    pngname = name+'.png'
     if not pngname: raise Exception
 
     with open(os.path.join('tex', pngname), 'rb') as pngfile:
