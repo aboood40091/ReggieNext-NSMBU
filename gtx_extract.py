@@ -1,32 +1,25 @@
-#!/usr/bin/python
-# -*- coding: latin-1 -*-
+#!/usr/bin/env python
 
-# Reggie! Next - New Super Mario Bros. U Level Editor
-# Version v0.6
-# Copyright (C) 2009-2016 Treeki, Tempus, angelsl, JasonP27, Kinnay,
-# MalStar1000, RoadrunnerWMC, MrRean, Grop
+# GTX Extractor
+# Version v1.2a
+# Copyright © 2014 Treeki, 2015-2016 AboodXD
 
-# This file is part of Reggie! Next.
+# This file is part of GTX Extractor.
 
-# Reggie! is free software: you can redistribute it and/or modify
+# GTX Extractor is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# Reggie! is distributed in the hope that it will be useful,
+# GTX Extractor is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with Reggie!.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# gtx_extract.py
-# Decode GFD (GTX/GSH) images.
-
-
-################################################################
-################################################################
+"""gtx_extract.py: Decode GFD (GTX/GSH) images."""
 
 import os, struct, sys
 
@@ -267,12 +260,12 @@ def readGFD(f):
 def writeFile(data):
     if data.format == 0x00:
         raise ValueError("Invalid format!")
-    elif data.format == "GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM":
+    elif (data.format == "GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM" or data.format == 0x1a):
         return export_RGBA8(data)
-    elif data.format == "GX2_SURFACE_FORMAT_T_BC5_UNORM":
+    elif (data.format == "GX2_SURFACE_FORMAT_T_BC5_UNORM" or data.format == 0x33):
         return export_DXT5(data)
     else:
-        raise UnimplementedError("Unimplemented texture format: " + hex(data.format))
+        raise NotImplementedError("Unimplemented texture format: " + hex(data.format))
 
 def export_RGBA8(gfd):
     pos, x, y = 0, 0, 0
@@ -297,7 +290,7 @@ def export_RGBA8(gfd):
             output[pos_:pos_ + 4] = gfd.data[pos:pos + 4]
 
     img = QtGui.QImage(output, gfd.width, gfd.height, QtGui.QImage.Format_RGBA8888)
-    yield img.copy(0, 0, gfd.width, gfd.height)
+    return img.copy(0, 0, gfd.width, gfd.height)
 
 def export_DXT5(gfd):
     pos, x, y = 0, 0, 0
@@ -335,53 +328,4 @@ def export_DXT5(gfd):
             output[pos__:pos__ + 4] = outValue
 
     img = QtGui.QImage(output, gfd.width, gfd.height, QtGui.QImage.Format_RGBA8888)
-    yield img.copy(0, 0, gfd.width, gfd.height)
-
-
-def main():
-    """
-    This place is a mess...
-    """
-    if len(sys.argv) != 2:
-        print("Usage: gtx_extract.py input")
-        sys.exit(1)
-    
-    with open(sys.argv[1], "rb") as inf:
-        print('Converting: ' + sys.argv[1])
-        inb = inf.read()
-        inf.close()
-
-    data = readGFD(inb)
-
-    if data.format == 0x1A:
-        data.format = "GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM"
-    elif data.format == 0x33:
-        data.format = "GX2_SURFACE_FORMAT_T_BC5_UNORM"
-
-    print("")
-    print("// ----- GX2Surface Info ----- ")
-    #print("  index     = " + str(0))
-    print("  dim       = " + str(data.dim))
-    print("  width     = " + str(data.width))
-    print("  height    = " + str(data.height))
-    print("  depth     = " + str(data.depth))
-    print("  numMips   = " + str(data.numMips))
-    print("  format    = " + data.format)
-    print("  aa        = " + str(data.aa))
-    print("  use       = " + str(data.use))
-    print("  imageSize = " + str(data.imageSize))
-    print("  mipSize   = " + str(data.mipSize))
-    print("  tileMode  = " + str(data.tileMode))
-    print("  swizzle   = " + str(data.swizzle) + ", " + hex(data.swizzle))
-    print("  alignment = " + str(data.alignment))
-    print("  pitch     = " + str(data.pitch))
-    #print("  mipOffset = " + str(data.mipOffset))
-    
-    name = os.path.splitext(sys.argv[1])[0]
-
-    for img in writeFile(data):
-        img.save(name + ".png")
-        print('')
-        print('Finished converting: ' + sys.argv[1])
-
-if __name__ == '__main__': main()
+    return img.copy(0, 0, gfd.width, gfd.height)
