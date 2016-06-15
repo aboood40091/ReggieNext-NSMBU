@@ -227,7 +227,7 @@ def readGFD(f):
 
             pos += surface.size
 
-            if block.dataSize != 0x9C :
+            if block.dataSize != 0x9C:
                 raise ValueError("Invalid data block size!")
 
             gfd.dim = surface.dim
@@ -260,9 +260,9 @@ def readGFD(f):
 def writeFile(data):
     if data.format == 0x00:
         raise ValueError("Invalid format!")
-    elif (data.format == "GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM" or data.format == 0x1a):
+    elif data.format == 0x1a:
         return export_RGBA8(data)
-    elif (data.format == "GX2_SURFACE_FORMAT_T_BC5_UNORM" or data.format == 0x33):
+    elif data.format == 0x33:
         return export_DXT5(data)
     else:
         raise NotImplementedError("Unimplemented texture format: " + hex(data.format))
