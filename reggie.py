@@ -75,6 +75,7 @@ import spritelib as SLib
 import sprites
 from strings import *
 import TPLLib
+import gtx_extract as gtx
 import yaz0
 
 ReggieID = 'Reggie! Level Editor Next by Treeki, Tempus, RoadrunnerWMC, MrRean and Grop'
@@ -2974,7 +2975,7 @@ def _LoadTileset(idx, name, reload=False):
             return False
 
         # load in the textures
-        img = LoadTexture_NSMBU(comptiledata, name)
+        img = gtx.writeFile(gtx.readGFD(comptiledata))
 
         # Divide it into individual tiles and
         # add collisions at the same time
@@ -3055,25 +3056,6 @@ def _LoadTileset(idx, name, reload=False):
     TilesetCache[name] = []
     for i in range(256):
         TilesetCache[name].append(Tiles[i + tileoffset])
-
-def LoadTexture_NSMBU(tiledata, name):
-    with open('tex/'+name+'.gtx', 'wb') as binfile:
-        binfile.write(tiledata)
-
-    print('')
-    os.system('python gtx_extract.py tex/'+name+'.gtx')
-
-    pngname = name+'.png'
-    if not pngname: raise Exception
-
-    with open(os.path.join('tex', pngname), 'rb') as pngfile:
-        img = QtGui.QImage(os.path.join('tex', pngname))
-
-    for filename in os.listdir('tex'):
-        if filename == 'NOTE.txt': continue
-        os.remove(os.path.join('tex', filename))
-
-    return img
 
 def CascadeTilesetNames_Category(lower, upper):
     """
