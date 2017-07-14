@@ -34,7 +34,7 @@ goto :nogoaway
 :downloadthatxml
 
 @echo OFF
-echo Downloading latest cateogry data...
+echo Downloading latest category data...
 powershell -Command "Invoke-WebRequest http://rhcafe.us.to/categoryxml.php -OutFile reggiedata/spritecategories.xml"
 echo Done!
 echo Starting Reggie!
